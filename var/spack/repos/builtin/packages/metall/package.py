@@ -3,6 +3,8 @@
 #
 # SPDX-License-Identifier: (Apache-2.0 OR MIT)
 
+from spack.pkg.builtin.boost import Boost
+
 
 class Metall(CMakePackage):
     """A Persistent Memory Allocator For Data-Centric Analytics"""
@@ -28,6 +30,11 @@ class Metall(CMakePackage):
     # googletest is required only for test
     # 'make test' is executed if '--run-tests' or '--test=root' is specified
     depends_on('googletest', type=('test'))
+
+    # TODO: replace this with an explicit list of components of Boost,
+    # for instance depends_on('boost +filesystem')
+    # See https://github.com/spack/spack/pull/22303 for reference
+    depends_on(Boost.with_default_variants, type=('build', 'link'))
 
     def cmake_args(self):
         if self.run_tests:

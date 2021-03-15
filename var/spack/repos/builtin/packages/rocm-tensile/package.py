@@ -5,6 +5,7 @@
 
 
 from spack import *
+from spack.pkg.builtin.boost import Boost
 
 
 class RocmTensile(CMakePackage):
@@ -33,18 +34,18 @@ class RocmTensile(CMakePackage):
     depends_on('cmake@3:', type='build')
     # This is the default library format since 3.7.0
     depends_on('msgpack-c@3:', when='@3.7:')
-    depends_on('boost', type=('build', 'link'))
 
-    for ver in ['3.5.0', '3.7.0', '3.8.0', '3.9.0', '3.10.0', '4.0.0', '4.1.0',
-                '4.2.0']:
-        depends_on('rocm-cmake@' + ver, type='build',  when='@' + ver)
-        depends_on('hip@' + ver,                       when='@' + ver)
-        depends_on('comgr@' + ver,                     when='@' + ver)
-        depends_on('llvm-amdgpu@' + ver,               when='@' + ver + '+openmp')
-        depends_on('llvm-amdgpu@' + ver + '~openmp',   when='@' + ver + '~openmp')
-        depends_on('rocminfo@' + ver,    type='build', when='@' + ver)
+    # TODO: replace this with an explicit list of components of Boost,
+    # for instance depends_on('boost +filesystem')
+    # See https://github.com/spack/spack/pull/22303 for reference
+    depends_on(Boost.with_default_variants)
 
-    for ver in ['3.5.0', '3.7.0', '3.8.0', '3.9.0']:
+    for ver in ['3.5.0', '3.7.0', '3.8.0', '3.9.0', '3.10.0', '4.0.0']:
+        depends_on('rocm-cmake@' + ver, type='build', when='@' + ver)
+        depends_on('rocm-device-libs@' + ver, type='build', when='@' + ver)
+        depends_on('hip@' + ver, when='@' + ver)
+        depends_on('comgr@' + ver, type='build', when='@' + ver)
+        # used in Tensile
         depends_on('rocm-smi@' + ver, type='build', when='@' + ver)
 
     for ver in ['4.0.0', '4.1.0', '4.2.0']:

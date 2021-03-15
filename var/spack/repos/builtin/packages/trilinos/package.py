@@ -7,6 +7,7 @@ import os
 import sys
 
 from spack import *
+from spack.pkg.builtin.boost import Boost
 from spack.operating_systems.mac_os import macos_version
 from spack.pkg.builtin.kokkos import Kokkos
 
@@ -360,7 +361,12 @@ class Trilinos(CMakePackage, CudaPackage):
 
     depends_on('blas')
     depends_on('lapack')
-    depends_on('boost', when='+boost')
+
+    # TODO: replace this with an explicit list of components of Boost,
+    # for instance depends_on('boost +filesystem')
+    # See https://github.com/spack/spack/pull/22303 for reference
+    depends_on(Boost.with_default_variants, when='+boost')
+
     depends_on('hdf5+hl', when='+hdf5')
     depends_on('matio', when='+matio')
     depends_on('suite-sparse', when='+suite-sparse')
